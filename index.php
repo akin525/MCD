@@ -1,11 +1,8 @@
-<?php session_start(); include ("fun.php"); ?>
+<?php include ("fun.php"); ?>
 <?php
 include_once ("include/database.php");
-// Inialize session
-//session_start();
-if (isset($_SESSION['email'])) {
+session_start();
 
-}
 $sql="SELECT maintain FROM  settings WHERE sno=0";
 if ($result = mysqli_query($con, $sql)) {
 
@@ -19,46 +16,53 @@ if ($result = mysqli_query($con, $sql)) {
     }
 
 }
+if (isset($_SESSION['username'])) {
+    print "
+				<script language='javascript'>
+					window.location = 'dashboard.php';
+				</script>
+			";
+}
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['todo']))
+{
+
 
 // Collect the data from post method of form submission //
-    $email = mysqli_real_escape_string($con, $_POST['email']);
-    $password = mysqli_real_escape_string($con, $_POST['password']);
+    $username=mysqli_real_escape_string($con,$_POST['username']);
+    $password=mysqli_real_escape_string($con,$_POST['password']);
 //    $password = md5($password);
 
-    $query = "SELECT * from users where email='$email' and password='$password'";
-//    $query= "SELECT * FROM `admin` WHERE email='$email' and password='$password'";
-    $result = $con->query($query);
+    $query = "select * from users where username='$username' and password='$password'";
+    $result = mysqli_query($con,$query);
     $count = mysqli_num_rows($result);
-//    echo $count;
-//    return;
 
-// If result matched $myusername and $mypassword, table row must be 1 row
-    if ($count == 1) {
-        $result = mysqli_query($con, $query);
+    // If result matched $myusername and $mypassword, table row must be 1 row
+    if($count == 1) {
+        $result = mysqli_query($con,$query);
 
-//        while ($row = mysqli_fetch_array($result)) {
-//            $status = $row['active'];
-//        }
-//
-//        if ($status == 0) {
-//            $errormsg = "<div class='alert alert-danger'>
-//    <button type='button' class='close' data-dismiss='alert'>&times;</button>
-//    <i class='fa fa-ban-circle'></i><strong>You have been banned from accessing this portal </br></strong></div>"; //printing error if found in validation
-//        } else {
-        $_SESSION['email'] = $email;
-        $_SESSION['login_user']=$email;
-        print "
+        while($row = mysqli_fetch_array($result))
+        {
+            $status=$row['status'];
+        }
+        if($status ==0){
+            $errormsg= "<div class='alert alert-danger'>
+                    <button type='button' class='close' data-dismiss='alert'>&times;</button>
+                    <i class='fa fa-ban-circle'></i><strong>You have been banned from accessing this portal </br></strong></div>"; //printing error if found in validation
+        }else{
+            $_SESSION['username'] = $username;
+            print "
                     <script language='javascript'>
+                    let message = 'Login Successful';
+                                    alert(message);
                         window.location = 'dashboard.php';
                     </script>
                     ";
-//        }
-    } else {
-        $errormsg = "<div class='alert alert-danger'>
-    <button type='button' class='close' data-dismiss='alert'>&times;</button>
-    <i class='fa fa-ban-circle'></i><strong>Incorrect login details </br></strong></div>"; //printing error if found in validation
+        }
+    }else {
+        $errormsg= "<div class='alert alert-danger'>
+                    <button type='button' class='close' data-dismiss='alert'>&times;</button>
+                    <i class='fa fa-ban-circle'></i><strong>Incorrect login details </br></strong></div>"; //printing error if found in validation
     }
 
 }
@@ -67,14 +71,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!-- page-title area end -->
 
-<center><?php
-    if(!empty($errormsg))
-    {
-        print $errormsg;
 
-    }
-    ?>
-</center>
 <body class="vh-100">
 <div class="authincation h-100">
     <div class="container h-100">
@@ -88,10 +85,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <a href="index.html"><img src="images/logo-full.png" alt=""></a>
                                 </div>
                                 <h4 class="text-center mb-4">Sign in your account</h4>
+                                <center><?php
+                                    if(!empty($errormsg))
+                                    {
+                                        print $errormsg;
+
+                                    }
+                                    ?>
+                                </center>
                                 <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, "utf-8"); ?>" method="post">
                                     <div class="mb-3">
-                                        <label class="mb-1"><strong>Email</strong></label>
-                                        <input type="email" name="email" class="form-control" spellcheck="false" placeholder="email" class="form-control" required autocomplete="current-email">
+                                        <label class="mb-1"><strong>Username</strong></label>
+                                        <input type="text" name="username" class="form-control" spellcheck="false" placeholder="email" class="form-control" required autocomplete="current-email">
+                                        <input type="hidden" name="todo" value="post">
+
                                     </div>
                                     <div class="mb-3">
                                         <label class="mb-1"><strong>Password</strong></label>
@@ -105,7 +112,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <a href="page-forgot-password.html">Forgot Password?</a>
+                                            <a href="resetpassword.php">Forgot Password?</a>
                                         </div>
                                     </div>
                                     <div class="text-center">

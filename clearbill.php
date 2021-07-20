@@ -8,7 +8,7 @@ require("coinassets/config.php");
 require("classes/block_io.php");
 require("classes/gateway.php");
 
-$query="SELECT * FROM  users where username = '".$loggedin_session."'";
+$query="SELECT * FROM  users where username = '".$_SESSION['username']."'";
 $result = mysqli_query($con,$query);
 
 while($row = mysqli_fetch_array($result))
@@ -57,7 +57,7 @@ while($row = mysqli_fetch_array($result))
                         $status="OK";
                         $msg="";
                     }
-                    $query="SELECT * FROM  wallet WHERE username = '".$loggedin_session."'";
+                    $query="SELECT * FROM  wallet WHERE username = '".$_SESSION['username']."'";
                     $result = mysqli_query($con,$query);
                     while($row = mysqli_fetch_array($result))
                     {
@@ -65,7 +65,7 @@ while($row = mysqli_fetch_array($result))
 //                        $amount=$row["balance"];
                     }
 
-                    $query="SELECT * FROM  users WHERE username = '".$loggedin_session."'";
+                    $query="SELECT * FROM  users WHERE username = '".$_SESSION['username']."'";
                     $result = mysqli_query($con,$query);
 
                     while($row = mysqli_fetch_array($result))
@@ -81,7 +81,7 @@ while($row = mysqli_fetch_array($result))
 
                     if ($status=="OK")
                     {
-                        $query=mysqli_query($con,"update wallet set balance=balance-$amount where username='".$loggedin_session."'");
+                        $query=mysqli_query($con,"update wallet set balance=balance-$amount where username='".$_SESSION['username']."'");
 $query=mysqli_query($con,"insert into bill_payment (product, username, amount, transactionid, paymentmethod,status) values ('$title', '$user', '$amount', '$scode', 'Wallet Payment', '$status')");
 
                         $errormsg= "<div class='alert alert-success'><button type='button' class='close' data-dismiss='alert'>&times;</button><i class='fa fa-ban-circle'></i><strong>Success : </br></strong>You have successfully paid NGN $amount for $title.</div>"; //printing error if found in validation

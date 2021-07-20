@@ -1,5 +1,16 @@
-<?php include("fun.php"); ?>
-<?php include ("include/session.php"); ?>
+<?php
+include("fun.php");
+session_start();
+include_once ("include/database.php");
+if (!isset($_SESSION['username'])) {
+    print "<script language='javascript'>
+					window.location = 'index.php';
+				</script>";
+}
+?>
+<?php //include ("include/session.php");
+
+?>
 
 <div id="main-wrapper">
 
@@ -107,14 +118,52 @@
             <ul class="metismenu" id="menu">
                 <li class="dropdown header-profile">
                     <a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
-<!--                        <img src="images/profile/pic1.jpg" width="20" alt=""/>-->
+                        <img src="images/profile/pic1.png" width="20" alt=""/>
                         <div class="header-info ms-3">
-                            <span class="font-w600 ">Hi,<b><?php echo $loggedin_session; ?></b></span>
-                            <span class="font-w400"><?php echo $loggedin_name; ?></span>
+                            <?php
+                            $query="SELECT * FROM  users WHERE username='".$_SESSION['username']."'";
+                            $result = mysqli_query($con,$query);
+
+                            while($row = mysqli_fetch_array($result))
+                            {
+                                $username="$row[username]";
+                            $name=$row["name"];
+                            $date=$row["date"];
+                            $email=$row["email"];
+                            $phone=$row["phone"];
+
+                            ?>
+                            <span class="font-w600 ">Hi,<b><?php echo $username; ?></b></span>
+                            <span class="font-w400"><?php echo $name; ?></span>
 <!--                            <span class="font-w400">--><?php //echo $user_check; ?><!--</span>-->
-                            <span class="font-w400"><?php echo $loggedin_phone; ?></span>
+                            <span class="font-w400"><?php echo $phone; ?></span>
+                            <?php } ?>
                         </div>
                     </a>
+                        <?php
+                        $query="SELECT * FROM  wallet WHERE username='".$_SESSION['username']."'";
+                        $result = mysqli_query($con,$query);
+
+                        while($row = mysqli_fetch_array($result))
+{
+    $balance=$row["balance"];
+    $account_name=$row["account_name"];
+    $account_no=$row["account_no"];
+
+?>
+                        <button type="button" class="btn btn-outline-success">
+                            <?php
+                            if ($account_no==1 && $account_name==1) {
+                                echo "<a href=virtual.php>create Virtual account</a>";
+                            }
+                            else {
+                                echo "<h5>Bank Name:".$account_name."</h5>";
+                                echo "<h5>Account No:".$account_no."</h5>";
+                            }
+                            }
+                            ?>
+                        </button>
+
                     <div class="dropdown-menu dropdown-menu-end">
                         <a href="app-profile.html" class="dropdown-item ai-icon">
                             <svg id="icon-user1" xmlns="http://www.w3.org/2000/svg" class="text-primary" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -135,10 +184,20 @@
                         <span class="nav-text">Dashboard</span>
                     </a>
                 </li>
-                <li><a  href="buydata.php" aria-expanded="false">
+                <li>
+                    <a  href="profile.php" aria-expanded="false">
+                        <i class="flaticon-044-menu"></i>
+                        <span class="nav-text">My Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a  href="buydata.php" aria-expanded="false">
                         <i class="flaticon-044-menu"></i>
                         <span class="nav-text">Buy Data</span>
-                    </a> <li><a  href="Buyairtime.php" aria-expanded="false">
+                    </a> 
+                </li>
+                <li>
+                    <a  href="Buyairtime.php" aria-expanded="false">
                         <i class="flaticon-044-menu"></i>
                         <span class="nav-text">Buy Airtime</span>
                     </a>
@@ -168,21 +227,7 @@
                         <span class="nav-text">Bill Transaction</span>
                     </a>
                 </li>
-                <li><a  href="credit.php" aria-expanded="false">
-                        <i class="flaticon-044-menu"></i>
-                        <span class="nav-text">MCD Agent</span>
-                    </a>
-                </li>
-                <li><a  href="transaction.php" aria-expanded="false">
-                        <i class="flaticon-044-menu"></i>
-                        <span class="nav-text">MCD Reseller</span>
-                    </a>
-                </li>
-                <li><a  href="create.php" aria-expanded="false">
-                        <i class="flaticon-044-menu"></i>
-                        <span class="nav-text">Free Lancer</span>
-                    </a>
-                </li>
+
                             </ul>
                         </li>
                     </ul>

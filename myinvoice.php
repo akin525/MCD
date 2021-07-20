@@ -14,7 +14,8 @@ include_once ("menubar.php");
                 <!-- Title & Breadcrumbs-->
                 <div class="row page-breadcrumbs">
                     <div class="col-md-12 align-self-center">
-                        <h4 class="theme-cl">Active Payment Invoice</h4>
+                        <h4>Active Payment Invoice</h4>
+                        <h4>--------------------------</h4>
                     </div>
                 </div>
                 <!-- Title & Breadcrumbs-->
@@ -26,7 +27,7 @@ include_once ("menubar.php");
                     <div class="col-md-12">
                         <div class="card">
                             <div class="flex-box padd-10 bb-1">
-                                <h4 class="mb-0">Payment Lists</h4>
+<!--                                <h4 class="mb-0">Payment Lists</h4>-->
 
                             </div>
                             <div class="card-body">
@@ -44,7 +45,7 @@ include_once ("menubar.php");
 
                                         <tbody>
                                         <?php
-                                        $query="SELECT * FROM bill_payment where username = '".$loggedin_session."'";
+                                        $query="SELECT * FROM bill_payment where username = '".$_SESSION['username']."'";
                                         $result = mysqli_query($con,$query);
                                         while($row = mysqli_fetch_array($result))
                                         {

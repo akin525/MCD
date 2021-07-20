@@ -1,9 +1,9 @@
-<?php include_once("include/session.php");
+<?php include_once("include/database.php");
 // Check, if username session is NOT set then this page will jump to login page
-if (!isset($_SESSION['login_user'])) {
+if (!isset($_SESSION['username'])) {
     print "
 <script language='javascript'>
-    window.location = '../login.php';
+    window.location = 'login.php';
 </script>
 ";
 }
@@ -44,7 +44,7 @@ $amount=$data["data"]["amount"]/100;
 
 
 
-$query="SELECT * FROM users where email = '".$_SESSION['login_user']."'";
+$query="SELECT * FROM users where username ='".$_SESSION['username']."'";
 $result = mysqli_query($con,$query);
 while($row = mysqli_fetch_array($result))
 {
@@ -53,7 +53,7 @@ while($row = mysqli_fetch_array($result))
     $name="$row[name]";
 }
 
-$query="SELECT * FROM  wallet WHERE username='".$loggedin_session."'";
+$query="SELECT * FROM  wallet WHERE username='".$_SESSION['username']."'";
 $result = mysqli_query($con,$query);
 while($row = mysqli_fetch_array($result))
 {
@@ -68,7 +68,7 @@ $fwallet=$ubalance+$amount;
 
 $query=mysqli_query($con,"insert into deposit (status, username, amount, payment_ref,  iwallet, fwallet, date) values (1,'$depositor', '$amount', '$refid', '$ubalance', '$fwallet', CURRENT_TIMESTAMP)");
 $result=mysqli_query($con,"update wallet set balance=balance+$amount WHERE username='$depositor'");
-$query="SELECT * FROM deposit where username = '".$loggedin_session."'";
+$query="SELECT * FROM deposit where username ='".$_SESSION['username']."'";
 $result = mysqli_query($con,$query);
 while($row = mysqli_fetch_array($result))
 {
@@ -77,7 +77,7 @@ while($row = mysqli_fetch_array($result))
 
 }
 
-$mail= "info@efemobilemoney.com";
+$mail= "mcd@gmail.com";
 $to = $email;
 $from = $mail;
 //$name = $_REQUEST['name'];
@@ -102,33 +102,14 @@ $body .= "<thead style='text-align: center;'><tr><td style='border:none;' colspa
 $body .= "<a href='{$link}'><img src='{$logo}' alt=''></a><br><br>";
 $body .= "<p style='border:none;'><strong>Wallet Summary<strong>";
 $body .= "<p style='border:none;'><strong>Name:</strong> {$name}</p>";
-$body .="<div class=card float_left>";
-$body .= " <tr>
-                                                <td class=invest_td1>Tansaction Id</td>
-
-                                                <td class=invest_td1>: NGN{$re}</td>
-                                            </tr>
-                                            </tbody>wallet ";
-$body .= "<tbody>
-                                            <tr>
-                                                <td class=invest_td1>Early Payments</td>
-                                                <td class=invest_td1>: NGN {$amount}</td>
-                                            </tr>";
-$body .= "<tr>
-                                                <td class=invest_td1>Matured Deposit</td>
-                                                <td class=invest_td1>: NGN{$iwallet}</td>
-                                            </tr>";
-$body .= " <tr>
-                                                <td class=invest_td1>Released Deposit</td>
-
-                                                <td class=invest_td1>: NGN{$fwallet}</td>
-                                            </tr>
-                                            </tbody>wallet ";
+$body .='<table rules="all" style="border-color: #666;" cellpadding="10">';
+$body .= "<tr><td><strong>Early Payments</strong> </td><td>: NGN {$amount}</td></tr>";
+$body .= "<tr><td><strong>Matured Deposit</strong> </td><td>: NGN{$iwallet}</td></tr>";
+$body .=  "<tr><td><strong>Released Deposit</strong> </td><td>: NGN{$fwallet}</td></tr>";
 $body .= "</tr>";
 // 	$body .= "<tr><td style='border:none;'><strong>Subject:</strong> {$csubject}</td></tr>";
-$body .= "<tr><td></td></tr>";
+$body .= "</table>";
 //$body .= "<tr><td colspan='2' style='border:none;'>{$cmessage}</td></tr>";
-$body .= "</tbody></table>";
 $body .= "</body></html>";
 
 $send = mail($to, $subject, $body, $headers);

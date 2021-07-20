@@ -1,16 +1,11 @@
 <?php
-if(!isset($_SERVER['HTTP_REFERER'])){
-    // redirect them to your desired location
-    header('location:404.php');
-    exit;
-}
 
-include_once ("include/session.php");
+include_once ("include/database.php");
 
 // Inialize session
-//session_start();
+session_start();
 // Check, if username session is NOT set then this page will jump to login page
-if (!isset($loggedin_session)) {
+if (!isset($_SESSION['username'])) {
     print "<script language='javascript'>	window.location = 'index.php';</script>";
 }
 
@@ -24,7 +19,7 @@ $GLOBALS['recipient']=mysqli_real_escape_string($con,$_GET['number']);
 $GLOBALS['method']=mysqli_real_escape_string($con,$_GET['method']);
 
 
-$query="SELECT * FROM users where username = '".$loggedin_session."'";
+$query="SELECT * FROM users where username = '".$_SESSION['username']."'";
 $result = mysqli_query($con,$query);
 while($row = mysqli_fetch_array($result))
 {
@@ -54,9 +49,9 @@ function pro($tran_stat, $product, $payer, $topay, $refid, $results, $con){
 
     if($tran_stat==0){
         $refund=$balance+$topay;
-        $query=mysqli_query($con,"update wallet set balance='".$refund."' where username='".$loggedin_session."'");
+        $query=mysqli_query($con,"update wallet set balance='".$refund."' where username='".$_SESSION['username']."'");
     }
-    echo "<script language='javascript'> window.location='myinvoice.php';</script>";
+    echo "<script language='javascript'> window.location='mcderror.php';</script>";
 }
 
 //start buying
@@ -65,7 +60,7 @@ if($product_type=="data"){
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.5starcompany.com.ng/mcd_reseller_v2.php',
+        CURLOPT_URL => 'https://api.5starcompany.com.ng/mcd_reseller_test.php',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -92,7 +87,11 @@ if($product_type=="data"){
         echo "<script language='javascript'> window.location='myinvoice.php';</script>";
     }
     if($success==0){
-        echo "<script language='javascript'> window.location='mcderror.php';</script>";
+        $query=mysqli_query($con,"update wallet set balance=balance+$topay where username='".$_SESSION['username']."'");
+        echo "<script language='javascript'>
+  let message = '$topay Refunded';
+                                    alert(message);
+ window.location='mcderror.php';</script>";
     }
 }
 
@@ -101,7 +100,7 @@ elseif ($product_type=="airtime") {
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.5starcompany.com.ng/mcd_reseller_v2.php',
+        CURLOPT_URL => 'https://api.5starcompany.com.ng/mcd_reseller_test.php',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,

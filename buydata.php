@@ -4,7 +4,7 @@
     <!-- row -->
     <div class="container-fluid">
         <?php
-        $query = "select * from users where username = '".$loggedin_session."' and allowpurchase=0";
+        $query = "select * from users where username ='".$_SESSION['username']."' and allowpurchase=0";
         $result = mysqli_query($con,$query);
         $count = mysqli_num_rows($result);
 
@@ -65,8 +65,8 @@
                                     <div class="product-thumb">
 
                                         <div class="product-pic">
-                                            <div class="uc_pic_box">
-                                                <img src="assets/dist/img/<?php echo "$row[logo]"; ?>" alt="Product logo"></div>
+                                            <div class="uc_pic_box"><br>
+                                                <img src="assets/dist/img/<?php echo "$row[logo]"; ?>" alt="Product logo"></br></div>
                                         </div>
 
                                         <div class="product-detailed">
